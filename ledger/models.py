@@ -33,4 +33,4 @@ class RecipeIngredient(models.Model):
     )
 
     def __str__(self):
-        return f'{self.quantity} {self.ingredient.name} of {self.recipe.name}'
+        return f'{self.quantity} of {self.ingredient.name} in {self.recipe.name}'
