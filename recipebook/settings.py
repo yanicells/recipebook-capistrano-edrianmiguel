@@ -124,3 +124,5 @@ STATIC_ROOT = os.getenv('STATIC_ROOT')
 
 LOGIN_REDIRECT_URL = '/recipes/list'
 LOGOUT_REDIRECT_URL = '/accounts/login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
