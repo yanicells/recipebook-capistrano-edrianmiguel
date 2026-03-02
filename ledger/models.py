@@ -1,5 +1,5 @@
-from django.conf import settings
-from django.core.validators import MinLengthValidator 
+from django.core.validators import MinLengthValidator
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
@@ -16,7 +16,7 @@ class Ingredient(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name='profile'
     )
