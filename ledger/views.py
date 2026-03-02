@@ -1,17 +1,15 @@
-from django.shortcuts import render
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView
 from .models import Recipe
 
 
-def recipe_list(request):
-    recipes = Recipe.objects.all()
-    ctx = {'recipes': recipes}
+class RecipeListView(ListView):
+    model = Recipe
+    template_name = 'ledger/recipe_list.html'
+    context_object_name = 'recipes'
 
-    return render(request, 'ledger/recipe_list.html', ctx)
 
-
-def recipe_detail(request, pk):
-    recipe = Recipe.objects.get(pk=pk)
-    ctx = {'recipe': recipe}
-
-    return render(request, 'ledger/recipe_detail.html', ctx)
+class RecipeDetailView(LoginRequiredMixin, DetailView):
+    model = Recipe
+    template_name = 'ledger/recipe_detail.html'
+    context_object_name = 'recipe'
