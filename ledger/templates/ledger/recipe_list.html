@@ -3,6 +3,9 @@
 {% block page_title %}Recipe List{% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
+<a href="{% url 'ledger:recipe-add' %}">Add Recipe</a>
+{% endif %}
 <ul>
     {% for recipe in recipes %}
     <li>
