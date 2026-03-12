@@ -24,6 +24,13 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     form_class = RecipeForm
     template_name = 'ledger/recipe_form.html'
 
+    def form_valid(self, form):
+        recipe = form.save(commit=False)
+        recipe.author = self.request.user.profile
+        recipe.save()
+        self.object = recipe
+        return redirect(self.get_success_url())
+
     def get_success_url(self):
         return reverse_lazy('ledger:recipe-detail', kwargs={'pk': self.object.pk})
 
