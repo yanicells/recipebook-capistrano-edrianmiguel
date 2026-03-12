@@ -39,6 +39,9 @@ class RecipeImageCreateView(LoginRequiredMixin, CreateView):
         recipe_image.save()
         return redirect(self.get_success_url())
 
+    def get_success_url(self):
+        return reverse_lazy('ledger:recipe-detail', kwargs={'pk': self.kwargs['pk']})
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['recipe_pk'] = self.kwargs['pk']
