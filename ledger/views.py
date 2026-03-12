@@ -1,55 +1,57 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 
-from .forms import RecipeForm, RecipeImageFrom
-from .models import Recipe, RecipeImage
+from .forms import RecipeForm, RecipeImageForm
+from .models import Profile, Recipe
 
 
-class RecipeListView(ListView):
-    model = Recipe
-    template_name = 'ledger/recipe_list.html'
-    context_object_name = 'recipes'
+def recipe_list(request):
+    recipes = Recipe.objects.all()
+    ctx = {'recipes': recipes}
+    return render(request, 'ledger/recipe_list.html', ctx)
 
 
-class RecipeDetailView(LoginRequiredMixin, DetailView):
-    model = Recipe
-    template_name = 'ledger/recipe_detail.html'
-    context_object_name = 'recipe'
+@login_required
+def recipe_create(request):
+    profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = RecipeForm(request.POST)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.author = profile
+            recipe.save()
+            return redirect(recipe.get_absolute_url())
+    else:
+        form = RecipeForm()
+
+    ctx = {'form': form}
+    return render(request, 'ledger/recipe_form.html', ctx)
 
 
-class RecipeCreateView(LoginRequiredMixin, CreateView):
-    model = Recipe
-    form_class = RecipeForm
-    template_name = 'ledger/recipe_form.html'
+@login_required
+def recipe_add_image(request, pk):
+    recipe = Recipe.objects.get(pk=pk)
 
-    def form_valid(self, form):
-        recipe = form.save(commit=False)
-        recipe.author = self.request.user.profile
-        recipe.save()
-        self.object = recipe
-        return redirect(self.get_success_url())
+    if request.method == 'POST':
+        form = RecipeImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            recipe_image = form.save(commit=False)
+            recipe_image.recipe = recipe
+            recipe_image.save()
+            return redirect(recipe.get_absolute_url())
+    else:
+        form = RecipeImageForm()
 
-    def get_success_url(self):
-        return reverse_lazy('ledger:recipe-detail', kwargs={'pk': self.object.pk})
+    ctx = {'form': form, 'recipe': recipe}
+    return render(request, 'ledger/recipeimage_form.html', ctx)
 
 
-class RecipeImageCreateView(LoginRequiredMixin, CreateView):
-    model = RecipeImage
-    form_class = RecipeImageFrom
-    template_name = 'ledger/recipeimage_form.html'
+@login_required
+def recipe_detail(request, pk):
+    recipe = Recipe.objects.get(pk=pk)
+    ingredients = recipe.ingredients.all()
+    images = recipe.images.all()
 
-    def form_valid(self, form):
-        recipe_image = form.save(commit=False)
-        recipe_image.recipe = Recipe.objects.get(pk=self.kwargs['pk'])
-        recipe_image.save()
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse_lazy('ledger:recipe-detail', kwargs={'pk': self.kwargs['pk']})
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['recipe_pk'] = self.kwargs['pk']
-        return context
+    ctx = {'recipe': recipe, 'ingredients': ingredients, 'images': images}
+    return render(request, 'ledger/recipe_detail.html', ctx)

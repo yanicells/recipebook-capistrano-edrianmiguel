@@ -5,9 +5,9 @@ from . import views
 app_name = "ledger"
 
 urlpatterns = [
-    path('recipes/list', views.RecipeListView.as_view(), name='recipe-list'),
-    path('recipe/<int:pk>/', views.RecipeDetailView.as_view(), name='recipe-detail'),
-    path('recipe/add', views.RecipeCreateView.as_view(), name='recipe-add'),
+    path('recipes/list', views.recipe_list, name='recipe-list'),
+    path('recipe/<int:pk>/', views.recipe_detail, name='recipe-detail'),
+    path('recipe/add', views.recipe_create, name='recipe-add'),
     path('recipe/<int:pk>/add_image',
-         views.RecipeImageCreateView.as_view(), name='recipe-add-image')
+         views.recipe_add_image, name='recipe-add-image'),
 ]

@@ -9,7 +9,7 @@ class RecipeForm(forms.ModelForm):
         fields = ['name']
 
 
-class RecipeImageFrom(forms.ModelForm):
+class RecipeImageForm(forms.ModelForm):
     class Meta:
         model = RecipeImage
         fields = ['image', 'description']
