@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipe',
             name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipe_author', to='ledger.profile'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipes', to='ledger.profile'),
         ),
     ]
